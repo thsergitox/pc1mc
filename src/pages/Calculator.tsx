@@ -52,6 +52,11 @@ const calculateNumericalDerivative = (func: string, method: string, xValue: numb
   }
 }
 
+
+const calculateValueError = (exact: number, numerical: number) => {
+  return (exact - numerical)
+}
+
 export default function Calculator({handle}: {handle: () => void}) {
   const [func, setFunc] = React.useState<string>('')
   const [method, setMethod] = React.useState<string>("")
@@ -64,6 +69,7 @@ export default function Calculator({handle}: {handle: () => void}) {
   const [xValue, setXValue] = React.useState<number>(1) // Valor predeterminado para x
   const [hValue, setHValue] = React.useState<number>(0.01) // Paso h pequeño para diferencias finitas
   const [open, setOpen] = React.useState<boolean>(false)
+  const [errorValue, setErrorValue] = React.useState<number>(0)
 
   const handleMethodSelect = (value: string) => {
     setMethod(value === method ? "" : value)
@@ -93,6 +99,9 @@ export default function Calculator({handle}: {handle: () => void}) {
     // Cálculo de la derivada numérica
     const numerical = calculateNumericalDerivative(func, method, xValue, hValue)
     setNumericalDerivative(numerical.toString())
+
+    const errorValue = calculateValueError(exactNumber, Number(numerical))
+    setErrorValue(errorValue)
   }
 
   return (
@@ -205,6 +214,10 @@ export default function Calculator({handle}: {handle: () => void}) {
             <div>
               <h3 className="text-lg font-semibold mb-2">Derivada Numérica ({formula}):</h3>
               <Card className="p-4 min-h-[60px]">{numericalDerivative || 'N/A'}</Card>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Diferencia:</h3>
+              <Card className="p-4 min-h-[60px]">{errorValue ? `${errorValue}` : 'N/A'}</Card>
             </div>
           </div>
         </CardContent>
