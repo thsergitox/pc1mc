@@ -4,14 +4,16 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import 'katex/dist/katex.min.css'
 import { Check, ChevronsUpDown } from "lucide-react"
 import * as math from "mathjs"
 import * as React from "react"
+import { BlockMath } from 'react-katex'
 
 const methods = [
-  { value: 'backward', label: 'Método de Backward' },
-  { value: 'forward', label: 'Método de Forward' },
-  { value: 'central', label: 'Método Central' },
+  { value: 'backward', label: 'Método de Backward', latex: '\\frac{f(x) - f(x-h)}{h}' },
+  { value: 'forward', label: 'Método de Forward', latex: '\\frac{f(x+h) - f(x)}{h}' },
+  { value: 'central', label: 'Método Central', latex: '\\frac{f(x+h) - f(x-h)}{2h}' },
 ]
 
 // Cálculo simbólico de la derivada con math.js
@@ -57,6 +59,7 @@ export default function Calculator() {
   const [exactDerivativeNumer, setExactDerivativeNumber] = React.useState<number>(0)
   const [numericalDerivative, setNumericalDerivative] = React.useState<string>('')
   const [formula, setFormula] = React.useState<string>('')
+  const [latexFormula, setLatexFormula] = React.useState<string>('')
   const [error, setError] = React.useState<string>('')
   const [xValue, setXValue] = React.useState<number>(1) // Valor predeterminado para x
   const [hValue, setHValue] = React.useState<number>(0.01) // Paso h pequeño para diferencias finitas
@@ -66,6 +69,7 @@ export default function Calculator() {
     setMethod(value === method ? "" : value)
     setFormula(methods.find(m => m.value === value)?.label || '')
     setOpen(false)
+    setLatexFormula(methods.find(m => m.value === value)?.latex || '') 
   }
 
   const handleCalculate = () => {
@@ -186,6 +190,12 @@ export default function Calculator() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
           <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Fórmula del Método en LaTeX:</h3>
+              <Card className="p-4 min-h-[60px]">
+                <BlockMath math={latexFormula || 'Seleccione un método para ver su fórmula en LaTeX'} />
+              </Card>
+            </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">Derivada Exacta:</h3>
               <Card className="p-4 min-h-[60px]">{exactDerivative ? `${exactDerivative} = ${exactDerivativeNumer}` : 'N/A'}</Card>
