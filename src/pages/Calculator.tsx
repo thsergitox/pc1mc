@@ -30,7 +30,7 @@ const calculateExactNumber = (func: string, variable: string, xVal: number) => {
   try {
     const derivative = math.derivative(func, variable)
     const number = derivative.evaluate({ x: xVal })
-    return number // Devuelve la derivada simbólica en formato de texto
+    return number // Devuelve el resultado de la derivada en un número
   } catch (error) {
     return `Error al calcular la derivada exacta${error}`
   }
@@ -52,7 +52,7 @@ const calculateNumericalDerivative = (func: string, method: string, xValue: numb
   }
 }
 
-export default function Calculator() {
+export default function Calculator({handle}: {handle: () => void}) {
   const [func, setFunc] = React.useState<string>('')
   const [method, setMethod] = React.useState<string>("")
   const [exactDerivative, setExactDerivative] = React.useState<string>('')
@@ -86,7 +86,7 @@ export default function Calculator() {
     // Cálculo de la derivada exacta
     const exact = calculateExactDerivative(func, 'x')
     setExactDerivative(exact)
-
+    
     const exactNumber = calculateExactNumber(func, 'x', xValue)
     setExactDerivativeNumber(exactNumber)
 
@@ -96,11 +96,13 @@ export default function Calculator() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    
       <Card className="w-full max-w-6xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Calculadora de Derivadas</CardTitle>
+        
+        <CardHeader className="flex justify-between items-center space-x-4">
+          <CardTitle className="text-2xl font-bold ">Calculadora de <a onClick={handle}  className="cursor-pointer">Derivadas</a></CardTitle>
         </CardHeader>
+        
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
@@ -193,7 +195,7 @@ export default function Calculator() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Fórmula del Método en LaTeX:</h3>
               <Card className="p-4 min-h-[60px]">
-                <BlockMath math={latexFormula || 'Seleccione un método para ver su fórmula en LaTeX'} />
+                <BlockMath math={latexFormula || 'N/A'} />
               </Card>
             </div>
             <div>
@@ -207,6 +209,6 @@ export default function Calculator() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    
   )
 }
