@@ -9,6 +9,7 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import * as math from "mathjs"
 import * as React from "react"
 import { BlockMath } from 'react-katex'
+import Props from '../types/Props'
 
 const methods = [
   { value: 'backward', label: 'Método de Backward', latex: '\\frac{f(x) - f(x-h)}{h}' },
@@ -57,7 +58,7 @@ const calculateValueError = (exact: number, numerical: number) => {
   return (exact - numerical)
 }
 
-export default function Calculator({handle}: {handle: () => void}) {
+const Calculator: React.FC<Props> = ({ handle, options }) => {
   const [func, setFunc] = React.useState<string>('')
   const [method, setMethod] = React.useState<string>("")
   const [exactDerivative, setExactDerivative] = React.useState<string>('')
@@ -109,7 +110,9 @@ export default function Calculator({handle}: {handle: () => void}) {
       <Card className="w-full max-w-6xl mx-auto">
         
         <CardHeader className="flex justify-between items-center space-x-4">
-          <CardTitle className="text-2xl font-bold ">Calculadora de <a onClick={handle}  className="cursor-pointer">Derivadas</a></CardTitle>
+          <CardTitle className="text-2xl font-bold ">Calculadora de <a onClick={() => handle(options.hessiana)}  className="cursor-pointer">Derivadas</a></CardTitle>
+        
+        
         </CardHeader>
         
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -225,3 +228,5 @@ export default function Calculator({handle}: {handle: () => void}) {
     
   )
 }
+
+export default Calculator

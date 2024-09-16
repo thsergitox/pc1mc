@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import * as math from "mathjs"
 import * as React from "react"
 import { BlockMath } from 'react-katex'
+import Props from '../types/Props'
 
 const calculateHessian = (func: string, variables: string[], point: number[], h: number) => {
   const n = variables.length
@@ -48,7 +49,7 @@ const calculateHessian = (func: string, variables: string[], point: number[], h:
   return hessian
 }
 
-export default function HessianCalculator({handle}: {handle: () => void}) {
+const HessianCalculator: React.FC<Props> = ({ handle, options }) => {
   const hessianFormula = '\\frac{\\partial^2 f}{\\partial x_i \\partial x_j} \\approx \\frac{f(x_i+h, x_j+h) - f(x_i+h, x_j-h) - f(x_i-h, x_j+h) + f(x_i-h, x_j-h)}{4h^2}';
   const [func, setFunc] = React.useState<string>('')
   const [variables, setVariables] = React.useState<string[]>(['x', 'y']) // Por defecto dos variables
@@ -74,7 +75,7 @@ export default function HessianCalculator({handle}: {handle: () => void}) {
   
       <Card className="w-full max-w-6xl mx-auto">
         <CardHeader className="flex justify-between items-center space-x-4"> 
-          <CardTitle className="text-2xl font-bold text-center">Calculadora de la <a onClick={handle}  className="cursor-pointer"> Hessiana</a></CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Calculadora de la <a onClick={() => handle(options.bracketing)}  className="cursor-pointer"> Hessiana</a></CardTitle>
         </CardHeader>
         
         <CardContent className="grid grid-cols-1 gap-6">
@@ -171,3 +172,5 @@ export default function HessianCalculator({handle}: {handle: () => void}) {
     
   )
 }
+
+export default HessianCalculator
