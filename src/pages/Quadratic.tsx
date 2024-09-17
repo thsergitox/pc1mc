@@ -29,7 +29,7 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
   }
 
   // Implementación del algoritmo Quadratic Fit Search
-  const quadraticFitSearch = (f: (x: number) => number, a: number, b: number, c: number, n: number) => {
+  const quadraticFitSearch = (a: number, b: number, c: number, n: number) => {
     let ya = evaluateFunc(a);
     let yb = evaluateFunc(b);
     let yc = evaluateFunc(c);
@@ -74,7 +74,7 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
   const handleCalculate = () => {
     if (func && !isNaN(a) && !isNaN(b) && !isNaN(c) && iterations > 0) {
       setResults([])
-      const data = quadraticFitSearch(evaluateFunc, a, b, c, iterations);
+      const data = quadraticFitSearch(a, b, c, iterations);
       setResults(data); // Guardar todas las iteraciones
       setIterationIndex(0); // Iniciar con la primera iteración
     } else {
