@@ -15,7 +15,7 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
   const [func, setFunc] = React.useState<string>('') // Función
   const [iterations, setIterations] = React.useState<number>(5) // Número de iteraciones
   const [iterationIndex, setIterationIndex] = React.useState<number>(0) // Índice de la iteración
-  const [results, setResults] = React.useState<{ a: number, b: number, c: number, x: number}[]>([]) // Resultados por iteración
+  const [results, setResults] = React.useState<{ a: number, b: number, c: number, x: number, f: string}[]>([]) // Resultados por iteración
 
   // Evaluar la función
   const evaluateFunc = (x: number) => {
@@ -34,10 +34,17 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
     let yb = evaluateFunc(b);
     let yc = evaluateFunc(c);
     const iterationsData = [];
-    iterationsData.push({ a, b, c, x: 0 });
+    const c1 = ((yc - ya) * (b - a) - (yb - ya) * (c - a)) / ((c - b) * (b - a) * (c - a));
+    const c2 = (yb - ya) / (b - a) - c1 * (a + b);
+    const c3 = ya - c1 * a * a - c2 * a
+    
+
+    const f = 'f(x) = ' + parseFloat(c1.toFixed(3)) + 'x^2 + ' + parseFloat(c2.toFixed(3)) + 'x + ' + parseFloat(c3.toFixed(3))
+
+    iterationsData.push({ a, b, c, x: 0 , f});
 
     for (let i = 0; i < n; i++) {
-      const x = 0.5 * ((ya * (b ** 2 - c ** 2)) + (yb * (c ** 2 - a ** 2)) + (yc * (a ** 2 - b ** 2))) /
+      let x = 0.5 * ((ya * (b ** 2 - c ** 2)) + (yb * (c ** 2 - a ** 2)) + (yc * (a ** 2 - b ** 2))) /
                 ((ya * (b - c)) + (yb * (c - a)) + (yc * (a - b)));
       
       const yx = evaluateFunc(x);
@@ -64,7 +71,15 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
         }
       }
 
-      iterationsData.push({ a, b, c, x});
+      const c1 = ((yc - ya) * (b - a) - (yb - ya) * (c - a)) / ((c - b) * (b - a) * (c - a));
+      const c2 = (yb - ya) / (b - a) - c1 * (a + b);
+      const c3 = ya - c1 * a * a - c2 * a
+      const f = 'f(x) = ' + parseFloat(c1.toFixed(3)) + 'x^2 + ' + parseFloat(c2.toFixed(3)) + 'x + ' + parseFloat(c3.toFixed(3))
+      a = parseFloat(a.toFixed(3))
+      b = parseFloat(b.toFixed(3))
+      c = parseFloat(c.toFixed(3))
+      x = parseFloat(x.toFixed(3))
+      iterationsData.push({ a, b, c, x, f});
     }
 
     return iterationsData;
@@ -207,6 +222,12 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
 
           {results.length > 0 && (
             <div>
+              <h3 className="text-lg font-semibold mb-2">Función Cuadrática:</h3>
+              <Card className="p-4">
+                <BlockMath math={results[iterationIndex]?.f} />
+              </Card>
+
+
               <h3 className="text-lg font-semibold mb-2">Resultados:</h3>
               <Card className="p-4">
                 <p><strong>a:</strong> {results[iterationIndex]?.a}</p>

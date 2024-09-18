@@ -14,7 +14,7 @@ function App() {
 
   return (
     <>    
-    <div className="bg-gray-600">
+    <div className="bg-white">
       {
       type === options.derivadas ? (
         <Calculator handle={handleClick} options={options}/>
