@@ -15,7 +15,7 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
   const [func, setFunc] = React.useState<string>('') // Función
   const [iterations, setIterations] = React.useState<number>(5) // Número de iteraciones
   const [iterationIndex, setIterationIndex] = React.useState<number>(0) // Índice de la iteración
-  const [results, setResults] = React.useState<{ a: number, b: number, c: number, x: number, f: string}[]>([]) // Resultados por iteración
+  const [results, setResults] = React.useState<{ a: number, b: number, c: number, x: number, f: string, ya: number, yb: number, yc: number}[]>([]) // Resultados por iteración
 
   // Evaluar la función
   const evaluateFunc = (x: number) => {
@@ -34,14 +34,14 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
     let yb = evaluateFunc(b);
     let yc = evaluateFunc(c);
     const iterationsData = [];
-    const c1 = ((yc - ya) * (b - a) - (yb - ya) * (c - a)) / ((c - b) * (b - a) * (c - a));
-    const c2 = (yb - ya) / (b - a) - c1 * (a + b);
-    const c3 = ya - c1 * a * a - c2 * a
+    let c1 = ((yc - ya) * (b - a) - (yb - ya) * (c - a)) / ((c - b) * (b - a) * (c - a));
+    let c2 = (yb - ya) / (b - a) - c1 * (a + b);
+    let c3 = ya - c1 * a * a - c2 * a
     
 
-    const f = 'f(x) = ' + parseFloat(c1.toFixed(3)) + 'x^2 + ' + parseFloat(c2.toFixed(3)) + 'x + ' + parseFloat(c3.toFixed(3))
+    let f = 'f(x) = ' + parseFloat(c1.toFixed(3)) + 'x^2 + ' + parseFloat(c2.toFixed(3)) + 'x + ' + parseFloat(c3.toFixed(3))
 
-    iterationsData.push({ a, b, c, x: 0 , f});
+    iterationsData.push({ a, b, c, x: 0 , f, ya, yb, yc });
 
     for (let i = 0; i < n; i++) {
       let x = 0.5 * ((ya * (b ** 2 - c ** 2)) + (yb * (c ** 2 - a ** 2)) + (yc * (a ** 2 - b ** 2))) /
@@ -49,37 +49,40 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
       
       const yx = evaluateFunc(x);
 
+      f = 'f(x) = ' + parseFloat(c1.toFixed(3)) + 'x^2 + ' + parseFloat(c2.toFixed(3)) + 'x + ' + parseFloat(c3.toFixed(3))
+      iterationsData.push({ a, b, c, x, f, ya, yb, yc });
+
       if (x > b) {
         if (yx > yb) {
-          c = x;
-          yc = yx;
+          c = x
+          yc = yx
         } else {
-          a = b;
-          ya = yb;
-          b = x;
-          yb = yx;
+          a = b
+          ya = yb
+          b = x
+          yb = yx
         }
       } else if (x < b) {
         if (yx > yb) {
-          a = x;
-          ya = yx;
+          a = x
+          ya = yx
         } else {
-          c = b;
-          yc = yb;
-          b = x;
-          yb = yx;
+          c = b
+          yc = yb
+          b = x
+          yb = yx
         }
       }
 
-      const c1 = ((yc - ya) * (b - a) - (yb - ya) * (c - a)) / ((c - b) * (b - a) * (c - a));
-      const c2 = (yb - ya) / (b - a) - c1 * (a + b);
-      const c3 = ya - c1 * a * a - c2 * a
-      const f = 'f(x) = ' + parseFloat(c1.toFixed(3)) + 'x^2 + ' + parseFloat(c2.toFixed(3)) + 'x + ' + parseFloat(c3.toFixed(3))
+      c1 = ((yc - ya) * (b - a) - (yb - ya) * (c - a)) / ((c - b) * (b - a) * (c - a))
+      c2 = (yb - ya) / (b - a) - c1 * (a + b)
+      c3 = ya - c1 * a * a - c2 * a
+      f = 'f(x) = ' + parseFloat(c1.toFixed(3)) + 'x^2 + ' + parseFloat(c2.toFixed(3)) + 'x + ' + parseFloat(c3.toFixed(3))
       a = parseFloat(a.toFixed(3))
       b = parseFloat(b.toFixed(3))
       c = parseFloat(c.toFixed(3))
       x = parseFloat(x.toFixed(3))
-      iterationsData.push({ a, b, c, x, f});
+      iterationsData.push({ a, b, c, x, f, ya, yb, yc });
     }
 
     return iterationsData;
@@ -136,8 +139,15 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
 
   // Iterar en el gráfico para ver los cambios en cada iteración
   const handleIterate = () => {
-    if (results && iterationIndex < iterations - 1) {
+    if (results && iterationIndex < iterations*2 - 1) {
       setIterationIndex(prevIndex => prevIndex + 1);
+    }
+  }
+
+  // Iterar en el gráfico para ver los cambios en cada iteración
+  const handleBackIterate = () => {
+    if (results && iterationIndex > 0) {
+      setIterationIndex(prevIndex => prevIndex - 1);
     }
   }
 
@@ -219,6 +229,9 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
           <button onClick={handleIterate} className="bg-green-500 text-white p-2 mt-4 rounded">
             Mostrar Iteración Cuadrática
           </button>
+          <button onClick={handleBackIterate} className="bg-yellow-500 text-white p-2 mt-4 rounded">
+            Regresar Iteración Cuadrática
+          </button>
 
           {results.length > 0 && (
             <div>
@@ -230,10 +243,23 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
 
               <h3 className="text-lg font-semibold mb-2">Resultados:</h3>
               <Card className="p-4">
-                <p><strong>a:</strong> {results[iterationIndex]?.a}</p>
-                <p><strong>b:</strong> {results[iterationIndex]?.b}</p>
-                <p><strong>c:</strong> {results[iterationIndex]?.c}</p>
-                <p><strong>x_min:</strong> {results[iterationIndex]?.x}</p>
+                <p>
+                  <strong>a:</strong> {results[iterationIndex]?.a}
+                  <strong> y_a:</strong> {results[iterationIndex]?.ya}
+                </p>
+                <p>
+                  <strong>b:</strong> {results[iterationIndex]?.b}
+                  <strong> y_b:</strong> {results[iterationIndex]?.yb}
+                </p>
+                <p>
+                  <strong>c:</strong> {results[iterationIndex]?.c}
+                  <strong> y_c:</strong> {results[iterationIndex]?.yc}  
+                </p>
+                <p>
+                  <strong>x_min:</strong> {results[iterationIndex]?.x}
+                  <strong> f(x_min):</strong> {evaluateFunc(results[iterationIndex]?.x)}  
+                </p>
+
               </Card>
             </div>
           )}
@@ -269,13 +295,38 @@ const Quadratic: React.FC<Props> = ({ handle, options }) => {
                   name: 'Función Cuadrática'
                 },
                 {
-                  x: [results[iterationIndex]?.a, results[iterationIndex]?.b, results[iterationIndex]?.c],
-                  y: [evaluateFunc(results[iterationIndex]?.a), evaluateFunc(results[iterationIndex]?.b), evaluateFunc(results[iterationIndex]?.c)],
+                  x: [results[iterationIndex]?.a],
+                  y: [evaluateFunc(results[iterationIndex]?.a)],
+                  type: 'scatter',
+                  mode: 'markers',
+                  marker: { color: 'purple', size: 10 },
+                  name: 'Punto a'
+                },
+                {
+                  x: [results[iterationIndex]?.b],
+                  y: [evaluateFunc(results[iterationIndex]?.b)],
+                  type: 'scatter',
+                  mode: 'markers',
+                  marker: { color: 'yellow', size: 10 },
+                  name: 'Punto b'
+                },
+                {
+                  x: [results[iterationIndex]?.c],
+                  y: [evaluateFunc(results[iterationIndex]?.c)],
+                  type: 'scatter',
+                  mode: 'markers',
+                  marker: { color: 'green', size: 10 },
+                  name: 'Punto c'
+                },
+                {
+                  x: [results[iterationIndex]?.x],
+                  y: [evaluateFunc(results[iterationIndex]?.x)],
                   type: 'scatter',
                   mode: 'markers',
                   marker: { color: 'black', size: 10 },
-                  name: 'Puntos a, b, c'
+                  name: 'Punto x'
                 }
+
               ]}
               layout={{
                 title: `Iteración ${iterationIndex + 1}`,
